@@ -1,0 +1,258 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+  engineType = "library"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+enum Role {
+  ADMIN
+  EMPLOYEE
+  CLIENT
+}
+
+enum EmployeeStatus {
+  PENDING
+  APPROVED
+  REJECTED
+  SUSPENDED
+}
+
+enum BookingStatus {
+  PENDING
+  ASSIGNED
+  ON_THE_WAY
+  IN_PROGRESS
+  COMPLETED
+  CANCELLED
+}
+
+enum PaymentStatus {
+  PENDING
+  COMPLETED
+  FAILED
+}
+
+enum DiscountType {
+  PERCENTAGE
+  FIXED
+}
+
+model User {
+  id            String    @id @default(cuid())
+  name          String?
+  email         String
+  passwordHash  String?
+  role          Role      @default(CLIENT)
+  phone         String?
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+
+  employeeProfile EmployeeProfile?
+  clientBookings  Booking[]        @relation("ClientBookings")
+  assignedJobs    Booking[]        @relation("EmployeeJobs")
+  reviewsGiven    Review[]         @relation("ClientReviews")
+  reviewsReceived Review[]         @relation("EmployeeReviews")
+  savedLocations  SavedLocation[]
+  adminNotifications AdminNotification[] @relation("EmployeeNotifications")
+  employeeNotifications EmployeeNotification[] @relation("EmployeeAssignmentNotifications")
+
+  @@unique([email, role])
+}
+
+model EmployeeProfile {
+  id              String         @id @default(cuid())
+  userId          String         @unique
+  user            User           @relation(fields: [userId], references: [id], onDelete: Cascade)
+  gender          String?
+  dob             DateTime?
+  address         String?
+  aadhaarFrontUrl String?
+  aadhaarBackUrl  String?
+  photoUrl        String?
+  services        String[]
+
+  status          EmployeeStatus @default(PENDING)
+  createdAt       DateTime       @default(now())
+  updatedAt       DateTime       @updatedAt
+}
+
+model ServiceCategory {
+  id        String    @id @default(cuid())
+  name      String    @unique
+  services  Service[]
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+}
+
+model Service {
+  id            String    @id @default(cuid())
+  name          String
+  description   String?
+  basePrice     Float
+  iconUrl       String?
+  images        String[]  @default([])
+  videos        String[]  @default([])
+  estimatedTime String?
+  isActive      Boolean   @default(true)
+  categoryId    String?
+  category      ServiceCategory? @relation(fields: [categoryId], references: [id])
+  bookings      Booking[]
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+}
+
+model Booking {
+  id            String        @id @default(cuid())
+  clientId      String
+  client        User          @relation("ClientBookings", fields: [clientId], references: [id])
+  employeeId    String?
+  employee      User?         @relation("EmployeeJobs", fields: [employeeId], references: [id])
+  serviceId     String
+  service       Service       @relation(fields: [serviceId], references: [id])
+  date          DateTime
+  timeSlot      String
+  address       String
+  status        BookingStatus @default(PENDING)
+  paymentStatus PaymentStatus @default(PENDING)
+  createdAt     DateTime      @default(now())
+  updatedAt     DateTime      @updatedAt
+
+  couponId      String?
+  coupon        Coupon?       @relation(fields: [couponId], references: [id])
+  discountAmount Float?
+
+  review  Review?
+  payment Payment?
+  employeeNotifications EmployeeNotification[]
+}
+
+model Review {
+  id         String   @id @default(cuid())
+  bookingId  String   @unique
+  booking    Booking  @relation(fields: [bookingId], references: [id])
+  clientId   String
+  client     User     @relation("ClientReviews", fields: [clientId], references: [id])
+  employeeId String
+  employee   User     @relation("EmployeeReviews", fields: [employeeId], references: [id])
+  rating     Int
+  comment    String?
+  createdAt  DateTime @default(now())
+}
+
+model Payment {
+  id            String        @id @default(cuid())
+  bookingId     String        @unique
+  booking       Booking       @relation(fields: [bookingId], references: [id])
+  transactionId String?
+  amount        Float
+  adminShareAmount    Float?
+  employeeShareAmount Float?
+  gateway       String        @default("RAZORPAY")
+  status        PaymentStatus @default(PENDING)
+  createdAt     DateTime      @default(now())
+  updatedAt     DateTime      @updatedAt
+}
+
+model Coupon {
+  id                  String       @id @default(cuid())
+  name                String
+  discountType        DiscountType
+  discountValue       Float
+  minBookingAmount    Float?
+  maxDiscountAmount   Float?
+  usageLimitPerClient Int?
+  totalUsageLimit     Int?
+  currentUsageCount   Int          @default(0)
+  startDate           DateTime
+  expiryDate          DateTime
+  isActive            Boolean      @default(true)
+  description         String?
+  createdAt           DateTime     @default(now())
+  updatedAt           DateTime     @updatedAt
+
+  bookings            Booking[]
+}
+
+model District {
+  id        String   @id @default(cuid())
+  name      String   @unique
+  isActive  Boolean  @default(true)
+  towns     Town[]
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model Town {
+  id         String   @id @default(cuid())
+  name       String
+  isActive   Boolean  @default(true)
+  districtId String
+  district   District @relation(fields: [districtId], references: [id], onDelete: Cascade)
+  cities     City[]
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+
+  @@unique([name, districtId])
+}
+
+model City {
+  id        String   @id @default(cuid())
+  name      String
+  isActive  Boolean  @default(true)
+  townId    String
+  town      Town     @relation(fields: [townId], references: [id], onDelete: Cascade)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@unique([name, townId])
+}
+
+model SavedLocation {
+  id        String   @id @default(cuid())
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  label     String
+  address   String
+  district  String
+  town      String?
+  city      String?
+  phone     String   @default("")
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model PaymentSettings {
+  id            String   @id @default(cuid())
+  adminShare    Int      @default(30)
+  employeeShare Int      @default(70)
+  updatedAt     DateTime @updatedAt
+}
+
+model AdminNotification {
+  id         String   @id @default(cuid())
+  type       String   @default("PROFILE_UPDATE")
+  employeeId String
+  employee   User     @relation("EmployeeNotifications", fields: [employeeId], references: [id], onDelete: Cascade)
+  message    String
+  diff       Json?    
+  isRead     Boolean  @default(false)
+  createdAt  DateTime @default(now())
+}
+
+model EmployeeNotification {
+  id         String   @id @default(cuid())
+  employeeId String
+  employee   User     @relation("EmployeeAssignmentNotifications", fields: [employeeId], references: [id], onDelete: Cascade)
+  bookingId  String?
+  booking    Booking? @relation(fields: [bookingId], references: [id], onDelete: Cascade)
+  title      String
+  message    String
+  isRead     Boolean  @default(false)
+  createdAt  DateTime @default(now())
+}
