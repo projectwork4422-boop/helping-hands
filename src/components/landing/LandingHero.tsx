@@ -4,7 +4,18 @@ import Link from "next/link";
 import { ArrowRight } from "lucide-react";
 import { motion } from "framer-motion";
 
-export default function LandingHero() {
+export default function LandingHero({ 
+  clientStats 
+}: { 
+  clientStats?: { happyClients: string; verifiedPros: string; servicesOffered: string; citiesServed: string }
+}) {
+  const stats = clientStats || {
+    happyClients: "10k+",
+    verifiedPros: "500+",
+    servicesOffered: "50+",
+    citiesServed: "20+",
+  };
+
   return (
     <section id="home" className="relative pt-32 pb-20 md:pt-40 md:pb-28 overflow-hidden bg-white">
       {/* Background decoration */}
@@ -74,19 +85,19 @@ export default function LandingHero() {
         >
           <div className="grid grid-cols-2 md:grid-cols-4 gap-8 text-center divide-x divide-gray-100">
             <div className="px-4">
-              <div className="text-3xl md:text-4xl font-black mb-1">10k+</div>
+              <div className="text-3xl md:text-4xl font-black mb-1">{stats.happyClients}</div>
               <div className="text-sm font-bold text-black/40 uppercase tracking-wider">Happy Clients</div>
             </div>
             <div className="px-4">
-              <div className="text-3xl md:text-4xl font-black mb-1">500+</div>
+              <div className="text-3xl md:text-4xl font-black mb-1">{stats.verifiedPros}</div>
               <div className="text-sm font-bold text-black/40 uppercase tracking-wider">Verified Pros</div>
             </div>
             <div className="px-4">
-              <div className="text-3xl md:text-4xl font-black mb-1">50+</div>
+              <div className="text-3xl md:text-4xl font-black mb-1">{stats.servicesOffered}</div>
               <div className="text-sm font-bold text-black/40 uppercase tracking-wider">Services Offered</div>
             </div>
             <div className="px-4">
-              <div className="text-3xl md:text-4xl font-black mb-1">20+</div>
+              <div className="text-3xl md:text-4xl font-black mb-1">{stats.citiesServed}</div>
               <div className="text-sm font-bold text-black/40 uppercase tracking-wider">Cities Served</div>
             </div>
           </div>

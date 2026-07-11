@@ -256,3 +256,21 @@ model EmployeeNotification {
   isRead     Boolean  @default(false)
   createdAt  DateTime @default(now())
 }
+
+model LandingPageStats {
+  id               String   @id @default("default")
+  
+  // Client Data (Hero Section)
+  happyClients     String   @default("10k+")
+  verifiedPros     String   @default("500+")
+  servicesOffered  String   @default("50+")
+  citiesServed     String   @default("20+")
+  
+  // Service Data (Stats Section)
+  totalCustomers   String   @default("10,000+")
+  servicesCompleted String  @default("25,000+")
+  activeProviders  String   @default("500+")
+  averageRating    String   @default("4.9")
+
+  updatedAt        DateTime @updatedAt
+}

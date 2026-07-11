@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { LayoutDashboard, Users, Briefcase, CalendarCheck, Settings, UserPlus, Wrench, UserMinus, Tag, Ticket, MapPin, CreditCard } from "lucide-react";
+import { LayoutDashboard, Users, Briefcase, CalendarCheck, Settings, UserPlus, Wrench, UserMinus, Tag, Ticket, MapPin, CreditCard, Globe } from "lucide-react";
 import { LogoutButton } from "@/components/auth/LogoutButton";
 import AdminHeader from "@/components/admin/AdminHeader";
 import { Bell } from "lucide-react";
@@ -30,6 +30,7 @@ export default function AdminLayout({
           <SidebarLink href="/admin/coupons" icon={<Ticket className="w-5 h-5" />} label="Coupons" />
           <SidebarLink href="/admin/districts" icon={<MapPin className="w-5 h-5" />} label="Location Access" />
           <SidebarLink href="/admin/notifications" icon={<Bell className="w-5 h-5" />} label="Notifications" />
+          <SidebarLink href="/admin/landing-page" icon={<Globe className="w-5 h-5" />} label="Landing Page Update" />
           <SidebarLink href="/admin/settings" icon={<Settings className="w-5 h-5" />} label="Settings" />
         </nav>
         
