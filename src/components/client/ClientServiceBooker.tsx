@@ -189,7 +189,7 @@ export default function ClientServiceBooker({
         className="bg-white rounded-xl border border-gray-100 shadow-sm hover:shadow-md transition-all duration-300 flex flex-col group cursor-pointer overflow-hidden"
       >
         {/* Top Image Cover */}
-        <div className="w-full h-32 bg-gray-50 relative overflow-hidden border-b border-gray-100">
+        <div className="w-full h-40 sm:h-32 bg-gray-50 relative overflow-hidden border-b border-gray-100 shrink-0">
           {(service as any).images?.[0] ? (
             <img
               src={(service as any).images[0]}
@@ -202,43 +202,43 @@ export default function ClientServiceBooker({
             </div>
           )}
           {/* Category Badge on Image */}
-          <div className="absolute top-2 left-2 bg-white/95 backdrop-blur-sm px-2 py-1 rounded text-[10px] font-bold text-gray-700 uppercase tracking-wider shadow-sm">
+          <div className="absolute top-2 left-2 bg-white/95 backdrop-blur-sm px-2.5 py-1 rounded-md text-[10px] font-bold text-gray-700 uppercase tracking-wider shadow-sm">
             {service.category?.name || "General"}
           </div>
         </div>
 
         {/* Content Area */}
-        <div className="p-4 flex flex-col flex-1">
-          <div className="flex justify-between items-start mb-1 gap-2">
-            <h3 className="text-sm font-bold text-gray-900 group-hover:text-blue-600 transition-colors line-clamp-1">
+        <div className="p-4 sm:p-4 flex flex-col flex-1">
+          <div className="flex justify-between items-start mb-1.5 gap-2">
+            <h3 className="text-base sm:text-sm font-bold text-gray-900 group-hover:text-blue-600 transition-colors line-clamp-1">
               {service.name}
             </h3>
             {reviews.length > 0 && (
               <div className="flex items-center gap-1 shrink-0 bg-yellow-50 px-1.5 py-0.5 rounded text-yellow-700">
-                <Star className="w-3 h-3 fill-yellow-500 text-yellow-500" />
-                <span className="text-[10px] font-bold">{avgRating}</span>
+                <Star className="w-3.5 h-3.5 sm:w-3 sm:h-3 fill-yellow-500 text-yellow-500" />
+                <span className="text-[11px] sm:text-[10px] font-bold">{avgRating}</span>
               </div>
             )}
           </div>
 
-          <p className="text-gray-500 text-xs mb-3 line-clamp-2">
+          <p className="text-gray-500 text-sm sm:text-xs mb-3 line-clamp-2 leading-relaxed">
             {service.description ||
               "Top-rated professional service delivered by verified experts."}
           </p>
 
           {service.estimatedTime && (
-            <div className="flex items-center gap-1.5 text-xs text-gray-500 mb-3 bg-gray-50 w-fit px-2 py-1 rounded-md">
+            <div className="flex items-center gap-1.5 text-xs text-gray-500 mb-4 bg-gray-50 w-fit px-2 py-1.5 rounded-md">
               <Clock className="w-3.5 h-3.5" />
-              <span>{service.estimatedTime}</span>
+              <span className="font-medium">{service.estimatedTime}</span>
             </div>
           )}
 
           <div className="flex items-center justify-between mt-auto pt-3 border-t border-gray-50">
             <div>
-              <p className="text-[10px] text-gray-400 font-medium uppercase tracking-wider mb-0.5">
+              <p className="text-[10px] sm:text-[10px] text-gray-400 font-bold uppercase tracking-wider mb-0.5">
                 Starts at
               </p>
-              <p className="text-sm font-bold text-gray-900">
+              <p className="text-lg sm:text-sm font-black text-gray-900">
                 ${service.basePrice.toFixed(2)}
               </p>
             </div>
@@ -248,16 +248,16 @@ export default function ClientServiceBooker({
                 if (isInCart(service.id)) removeFromCart(service.id);
                 else addToCart(service);
               }}
-              className={`w-8 h-8 rounded-full flex items-center justify-center transition-all ${
+              className={`w-10 h-10 sm:w-8 sm:h-8 rounded-full flex items-center justify-center transition-all ${
                 isInCart(service.id)
                   ? "bg-red-50 text-red-600 hover:bg-red-100"
                   : "bg-black text-white hover:bg-gray-800 hover:shadow-md hover:-translate-y-0.5"
               }`}
             >
               {isInCart(service.id) ? (
-                <X className="w-3.5 h-3.5" />
+                <X className="w-4 h-4 sm:w-3.5 sm:h-3.5" />
               ) : (
-                <ShoppingCart className="w-3.5 h-3.5" />
+                <ShoppingCart className="w-4 h-4 sm:w-3.5 sm:h-3.5" />
               )}
             </button>
           </div>
@@ -500,107 +500,129 @@ export default function ClientServiceBooker({
 
         {/* Filter Sidebar */}
         {showFilters && (
-          <div className="w-72 shrink-0 bg-white rounded-3xl border border-gray-200 p-6 shadow-sm self-start sticky top-24 hidden lg:block animate-in slide-in-from-right-4 duration-300">
-            <div className="flex items-center justify-between mb-6">
-              <h3 className="font-bold text-lg flex items-center gap-2">
-                <Filter className="w-4 h-4" /> Filters
-              </h3>
-              {(selectedCategories.length > 0 ||
-                priceRange.min ||
-                priceRange.max ||
-                searchQuery) && (
-                <button
-                  onClick={clearFilters}
-                  className="text-xs text-blue-600 hover:text-blue-800 font-medium"
-                >
-                  Clear All
-                </button>
-              )}
-            </div>
-
-            <div className="md:hidden mb-6">
-              <label className="text-xs font-bold uppercase tracking-wider text-gray-400 mb-3 block">
-                Search
-              </label>
-              <div className="relative">
-                <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
-                <input
-                  type="text"
-                  placeholder="Search..."
-                  value={searchQuery}
-                  onChange={(e) => setSearchQuery(e.target.value)}
-                  className="w-full pl-9 pr-4 py-2 bg-gray-50 border border-gray-200 rounded-xl text-sm focus:outline-none focus:border-black focus:ring-1 focus:ring-black"
-                />
-              </div>
-            </div>
-
-            <div className="mb-6">
-              <label className="text-xs font-bold uppercase tracking-wider text-gray-400 mb-3 block">
-                Categories
-              </label>
-              <div className="space-y-2">
-                {allCategories.map((cat) => (
-                  <label
-                    key={cat}
-                    className="flex items-center gap-3 cursor-pointer group"
-                  >
-                    <div className="relative flex items-center justify-center">
-                      <input
-                        type="checkbox"
-                        checked={selectedCategories.includes(cat)}
-                        onChange={() => toggleCategory(cat)}
-                        className="peer sr-only"
-                      />
-                      <div className="w-5 h-5 rounded border-2 border-gray-300 peer-checked:border-black peer-checked:bg-black transition-colors"></div>
-                      <svg
-                        className="absolute w-3 h-3 text-white pointer-events-none opacity-0 peer-checked:opacity-100 transition-opacity"
-                        viewBox="0 0 14 10"
-                        fill="none"
+          <>
+            {/* Mobile Backdrop */}
+            <div className="fixed inset-0 bg-black/60 z-[60] lg:hidden backdrop-blur-sm transition-opacity" onClick={() => setShowFilters(false)} />
+            
+            {/* Sidebar container */}
+            <div className="fixed inset-y-0 right-0 z-[70] w-[85%] sm:w-96 bg-white shadow-2xl lg:static lg:w-72 lg:shrink-0 lg:rounded-3xl lg:border lg:border-gray-200 lg:shadow-sm lg:self-start lg:sticky lg:top-24 lg:z-auto lg:h-auto h-full overflow-hidden animate-in slide-in-from-right-full lg:slide-in-from-right-4 duration-300 flex flex-col">
+              
+              <div className="p-6 pb-4 border-b border-gray-100 lg:border-none lg:pb-0">
+                <div className="flex items-center justify-between mb-4 lg:mb-6">
+                  <h3 className="font-bold text-lg flex items-center gap-2">
+                    <Filter className="w-5 h-5" /> Filters
+                  </h3>
+                  <div className="flex items-center gap-3">
+                    {(selectedCategories.length > 0 ||
+                      priceRange.min ||
+                      priceRange.max ||
+                      searchQuery) && (
+                      <button
+                        onClick={clearFilters}
+                        className="text-xs text-blue-600 hover:text-blue-800 font-bold"
                       >
-                        <path
-                          d="M1 5L5 9L13 1"
-                          stroke="currentColor"
-                          strokeWidth="2"
-                          strokeLinecap="round"
-                          strokeLinejoin="round"
-                        />
-                      </svg>
-                    </div>
-                    <span className="text-sm font-medium text-gray-700 group-hover:text-black transition-colors">
-                      {cat}
-                    </span>
-                  </label>
-                ))}
+                        Clear All
+                      </button>
+                    )}
+                    <button onClick={() => setShowFilters(false)} className="lg:hidden p-2 -mr-2 bg-gray-50 text-gray-500 hover:bg-gray-100 rounded-full transition-colors">
+                      <X className="w-5 h-5" />
+                    </button>
+                  </div>
+                </div>
               </div>
-            </div>
 
-            <div>
-              <label className="text-xs font-bold uppercase tracking-wider text-gray-400 mb-3 block">
-                Price Range ($)
-              </label>
-              <div className="flex items-center gap-2">
-                <input
-                  type="number"
-                  placeholder="Min"
-                  value={priceRange.min}
-                  onChange={(e) =>
-                    setPriceRange((prev) => ({ ...prev, min: e.target.value }))
-                  }
-                  className="w-full p-2 bg-gray-50 border border-gray-200 rounded-lg text-sm text-center focus:outline-none focus:border-black focus:ring-1 focus:ring-black"
-                />
-                <span className="text-gray-400">-</span>
-                <input
-                  type="number"
-                  placeholder="Max"
-                  value={priceRange.max}
-                  onChange={(e) =>
-                    setPriceRange((prev) => ({ ...prev, max: e.target.value }))
-                  }
-                  className="w-full p-2 bg-gray-50 border border-gray-200 rounded-lg text-sm text-center focus:outline-none focus:border-black focus:ring-1 focus:ring-black"
-                />
+              <div className="flex-1 overflow-y-auto p-6 pt-2 lg:pt-0 pb-24 lg:pb-6 space-y-6">
+                <div className="md:hidden">
+                  <label className="text-xs font-bold uppercase tracking-wider text-gray-400 mb-3 block">
+                    Search
+                  </label>
+                  <div className="relative">
+                    <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
+                    <input
+                      type="text"
+                      placeholder="Search..."
+                      value={searchQuery}
+                      onChange={(e) => setSearchQuery(e.target.value)}
+                      className="w-full pl-9 pr-4 py-3 lg:py-2 bg-gray-50 border border-gray-200 rounded-xl text-sm focus:outline-none focus:border-black focus:ring-1 focus:ring-black"
+                    />
+                  </div>
+                </div>
+
+                <div>
+                  <label className="text-xs font-bold uppercase tracking-wider text-gray-400 mb-3 block">
+                    Categories
+                  </label>
+                  <div className="space-y-3 lg:space-y-2">
+                    {allCategories.map((cat) => (
+                      <label
+                        key={cat}
+                        className="flex items-center gap-3 cursor-pointer group py-1 lg:py-0"
+                      >
+                        <div className="relative flex items-center justify-center">
+                          <input
+                            type="checkbox"
+                            checked={selectedCategories.includes(cat)}
+                            onChange={() => toggleCategory(cat)}
+                            className="peer sr-only"
+                          />
+                          <div className="w-5 h-5 rounded border-2 border-gray-300 peer-checked:border-black peer-checked:bg-black transition-colors"></div>
+                          <svg
+                            className="absolute w-3 h-3 text-white pointer-events-none opacity-0 peer-checked:opacity-100 transition-opacity"
+                            viewBox="0 0 14 10"
+                            fill="none"
+                          >
+                            <path
+                              d="M1 5L5 9L13 1"
+                              stroke="currentColor"
+                              strokeWidth="2"
+                              strokeLinecap="round"
+                              strokeLinejoin="round"
+                            />
+                          </svg>
+                        </div>
+                        <span className="text-sm font-medium text-gray-700 group-hover:text-black transition-colors">
+                          {cat}
+                        </span>
+                      </label>
+                    ))}
+                  </div>
+                </div>
+
+                <div>
+                  <label className="text-xs font-bold uppercase tracking-wider text-gray-400 mb-3 block">
+                    Price Range ($)
+                  </label>
+                  <div className="flex items-center gap-2">
+                    <input
+                      type="number"
+                      placeholder="Min"
+                      value={priceRange.min}
+                      onChange={(e) =>
+                        setPriceRange((prev) => ({ ...prev, min: e.target.value }))
+                      }
+                      className="w-full p-3 lg:p-2 bg-gray-50 border border-gray-200 rounded-xl lg:rounded-lg text-sm text-center focus:outline-none focus:border-black focus:ring-1 focus:ring-black"
+                    />
+                    <span className="text-gray-400 font-medium">-</span>
+                    <input
+                      type="number"
+                      placeholder="Max"
+                      value={priceRange.max}
+                      onChange={(e) =>
+                        setPriceRange((prev) => ({ ...prev, max: e.target.value }))
+                      }
+                      className="w-full p-3 lg:p-2 bg-gray-50 border border-gray-200 rounded-xl lg:rounded-lg text-sm text-center focus:outline-none focus:border-black focus:ring-1 focus:ring-black"
+                    />
+                  </div>
+                </div>
+              </div>
+
+              <div className="lg:hidden p-4 border-t border-gray-100 bg-white mt-auto">
+                <button onClick={() => setShowFilters(false)} className="w-full bg-black hover:bg-gray-900 text-white font-bold py-3.5 rounded-xl transition-colors">
+                  Apply Filters
+                </button>
               </div>
             </div>
-          </div>
+          </>
         )}
       </div>
 

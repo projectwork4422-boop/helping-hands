@@ -14,11 +14,29 @@ export default async function Home() {
     orderBy: { createdAt: 'desc' }
   });
 
+  const landingStats = await prisma.landingPageStats.findUnique({
+    where: { id: "default" }
+  });
+
+  const clientStats = landingStats ? {
+    happyClients: landingStats.happyClients,
+    verifiedPros: landingStats.verifiedPros,
+    servicesOffered: landingStats.servicesOffered,
+    citiesServed: landingStats.citiesServed,
+  } : undefined;
+
+  const serviceStats = landingStats ? {
+    totalCustomers: landingStats.totalCustomers,
+    servicesCompleted: landingStats.servicesCompleted,
+    activeProviders: landingStats.activeProviders,
+    averageRating: landingStats.averageRating,
+  } : undefined;
+
   return (
     <div className="flex flex-col min-h-screen">
       <Navbar />
       {/* 1. Hero Section */}
-      <LandingHero />
+      <LandingHero clientStats={clientStats} />
 
       {/* 2. About Us */}
       <LandingAbout />
@@ -36,7 +54,7 @@ export default async function Home() {
       <LandingProcess />
 
       {/* 7. Customer Statistics */}
-      <LandingStats />
+      <LandingStats serviceStats={serviceStats} />
 
       {/* 8. Success Stories */}
       <LandingSuccessStories />

@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { prisma } from "@/lib/prisma";
 import { Bell } from "lucide-react";
+import AdminMobileSidebar from "./AdminMobileSidebar";
 
 export default async function AdminHeader() {
   const unreadCount = await prisma.adminNotification.count({
@@ -9,7 +10,10 @@ export default async function AdminHeader() {
 
   return (
     <header className="h-20 bg-white border-b border-gray-100 flex items-center justify-between px-6 md:px-8">
-      <span className="text-xl font-bold tracking-tight md:hidden">Admin Portal</span>
+      <div className="flex items-center gap-3">
+        <AdminMobileSidebar />
+        <span className="text-xl font-bold tracking-tight md:hidden">Admin Portal</span>
+      </div>
       <div className="hidden md:block"></div> {/* Spacer for desktop */}
       
       <div className="flex items-center gap-4">

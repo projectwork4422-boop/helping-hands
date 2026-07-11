@@ -10,12 +10,16 @@ const fadeUp = {
   visible: { opacity: 1, y: 0, transition: { duration: 0.6 } }
 };
 
-export function LandingStats() {
+export function LandingStats({ 
+  serviceStats 
+}: { 
+  serviceStats?: { totalCustomers: string; servicesCompleted: string; activeProviders: string; averageRating: string } 
+}) {
   const stats = [
-    { value: "10,000+", label: "Total Customers" },
-    { value: "25,000+", label: "Services Completed" },
-    { value: "500+", label: "Active Providers" },
-    { value: "4.9/5", label: "Average Rating" },
+    { value: serviceStats?.totalCustomers || "10,000+", label: "Total Customers" },
+    { value: serviceStats?.servicesCompleted || "25,000+", label: "Services Completed" },
+    { value: serviceStats?.activeProviders || "500+", label: "Active Providers" },
+    { value: serviceStats?.averageRating ? `${serviceStats.averageRating}/5` : "4.9/5", label: "Average Rating" },
   ];
 
   return (

@@ -47,13 +47,13 @@ export default async function EmployeeDashboard() {
           <span className="text-xl font-black tracking-tight hidden sm:block">ProPortal</span>
         </div>
         
-        <div className="flex-1 max-w-xl mx-8 hidden md:block">
+        <div className="flex-1 max-w-xl mx-4 sm:mx-8 hidden sm:block">
           <div className="relative">
             <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
             <input 
               type="text" 
-              placeholder="Search assignments, clients..." 
-              className="w-full pl-10 pr-4 py-2.5 bg-gray-50 border-transparent focus:bg-white rounded-full focus:ring-2 focus:ring-black/5 focus:border-gray-200 transition-all outline-none text-sm font-medium"
+              placeholder="Search assignments..." 
+              className="w-full pl-9 pr-4 py-2 bg-gray-50 border-transparent focus:bg-white rounded-full focus:ring-2 focus:ring-black/5 focus:border-gray-200 transition-all outline-none text-sm font-medium"
             />
           </div>
         </div>
