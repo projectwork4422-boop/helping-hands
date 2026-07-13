@@ -1,9 +1,68 @@
 "use client";
 
-import { useState, useMemo } from "react";
-import { Check, ShoppingCart, Star, X, Clock } from "lucide-react";
+import { useState, useMemo, useRef, useEffect } from "react";
+import { Check, ShoppingCart, Star, X, Clock, ChevronLeft, ChevronRight } from "lucide-react";
 import { useCart, Service } from "@/context/CartContext";
 import { useRouter } from "next/navigation";
+
+const HorizontalServiceCarousel = ({ services, renderCard }: { services: Service[], renderCard: (s: Service) => React.ReactNode }) => {
+  const scrollRef = useRef<HTMLDivElement>(null);
+  const [showLeft, setShowLeft] = useState(false);
+  const [showRight, setShowRight] = useState(true);
+
+  const handleScroll = () => {
+    if (!scrollRef.current) return;
+    const { scrollLeft, scrollWidth, clientWidth } = scrollRef.current;
+    setShowLeft(scrollLeft > 5);
+    setShowRight(scrollLeft < scrollWidth - clientWidth - 5);
+  };
+
+  useEffect(() => {
+    handleScroll();
+    window.addEventListener("resize", handleScroll);
+    return () => window.removeEventListener("resize", handleScroll);
+  }, [services]);
+
+  const scroll = (direction: "left" | "right") => {
+    if (!scrollRef.current) return;
+    const scrollAmount = scrollRef.current.clientWidth * 0.8;
+    scrollRef.current.scrollBy({ left: direction === "left" ? -scrollAmount : scrollAmount, behavior: "smooth" });
+  };
+
+  return (
+    <div className="relative group -mx-4 px-4 sm:mx-0 sm:px-0">
+      {showLeft && (
+        <button 
+          onClick={() => scroll("left")} 
+          className="absolute left-1 sm:-left-4 top-1/2 -translate-y-1/2 z-10 bg-white/90 backdrop-blur shadow-[0_4px_12px_rgba(0,0,0,0.1)] border border-gray-100 rounded-full w-10 h-10 flex items-center justify-center text-black hover:bg-white transition-all md:hidden sm:group-hover:flex"
+        >
+          <ChevronLeft className="w-5 h-5" />
+        </button>
+      )}
+      {showRight && (
+        <button 
+          onClick={() => scroll("right")} 
+          className="absolute right-1 sm:-right-4 top-1/2 -translate-y-1/2 z-10 bg-white/90 backdrop-blur shadow-[0_4px_12px_rgba(0,0,0,0.1)] border border-gray-100 rounded-full w-10 h-10 flex items-center justify-center text-black hover:bg-white transition-all md:hidden sm:group-hover:flex"
+        >
+          <ChevronRight className="w-5 h-5" />
+        </button>
+      )}
+
+      <div 
+        ref={scrollRef}
+        onScroll={handleScroll}
+        className="flex sm:grid sm:grid-cols-2 lg:grid-cols-4 xl:grid-cols-5 gap-4 overflow-x-auto sm:overflow-visible snap-x snap-mandatory scrollbar-hide pb-4 sm:pb-0 w-full"
+        style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}
+      >
+        {services.map(service => (
+          <div key={service.id} className="w-[calc(50%-8px)] shrink-0 snap-start sm:w-auto h-full">
+            {renderCard(service)}
+          </div>
+        ))}
+      </div>
+    </div>
+  );
+};
 
 export default function ServiceDetailsClient({ service, suggestedServices = [] }: { service: Service, suggestedServices?: Service[] }) {
   const { cart, addToCart, removeFromCart, isInCart, clearCart } = useCart();
@@ -41,6 +100,92 @@ export default function ServiceDetailsClient({ service, suggestedServices = [] }
 
   const reviews = getServiceReviews(service);
   const avgRating = getAverageRating(reviews);
+
+  const renderServiceCard = (serviceToRender: Service) => {
+    const sReviews = getServiceReviews(serviceToRender);
+    const sAvgRating = getAverageRating(sReviews);
+    return (
+      <div
+        key={`service-${serviceToRender.id}`}
+        onClick={() => router.push(`/client/services/${serviceToRender.id}`)}
+        className="bg-white rounded-xl border border-gray-100 shadow-sm hover:shadow-md transition-all duration-300 flex flex-col group cursor-pointer overflow-hidden min-w-0 h-[300px]"
+      >
+        {/* Top Image Cover */}
+        <div className="w-full h-28 bg-gray-50 relative overflow-hidden border-b border-gray-100 shrink-0">
+          {(serviceToRender as any).images?.[0] ? (
+            <img
+              src={(serviceToRender as any).images[0]}
+              alt={serviceToRender.name}
+              className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+            />
+          ) : (
+            <div className="w-full h-full flex items-center justify-center text-4xl bg-blue-50/30 group-hover:scale-105 transition-transform duration-500">
+              {serviceToRender.iconUrl || "✨"}
+            </div>
+          )}
+          {/* Category Badge on Image */}
+          <div className="absolute top-2 left-2 bg-white/95 backdrop-blur-sm px-2.5 py-1 rounded-md text-[10px] font-bold text-gray-700 uppercase tracking-wider shadow-sm">
+            {serviceToRender.category?.name || "General"}
+          </div>
+        </div>
+
+        {/* Content Area */}
+        <div className="p-3 flex flex-col flex-1">
+          <div className="flex justify-between items-start mb-2 gap-2 h-[40px] overflow-hidden">
+            <h3 className="text-sm font-bold text-gray-900 group-hover:text-blue-600 transition-colors line-clamp-2">
+              {serviceToRender.name}
+            </h3>
+            {sReviews.length > 0 && (
+              <div className="flex items-center gap-1 shrink-0 bg-yellow-50 px-1.5 py-0.5 rounded text-yellow-700 mt-0.5">
+                <Star className="w-3 h-3 fill-yellow-500 text-yellow-500" />
+                <span className="text-[10px] font-bold">{sAvgRating}</span>
+              </div>
+            )}
+          </div>
+
+          <div className="mb-2 h-[28px] flex items-center shrink-0">
+            <p className="text-lg font-black text-gray-900 truncate">
+              ₹{serviceToRender.basePrice.toFixed(2)}
+            </p>
+          </div>
+
+          <div className="mb-2 h-[28px] shrink-0">
+            {serviceToRender.estimatedTime && (
+              <div className="flex items-center gap-1.5 text-xs text-gray-500 bg-gray-50 w-fit px-2 py-1 rounded-md">
+                <Clock className="w-3.5 h-3.5" />
+                <span className="font-medium truncate">{serviceToRender.estimatedTime}</span>
+              </div>
+            )}
+          </div>
+
+          <div className="mt-auto pt-2 border-t border-gray-50 shrink-0">
+            <button
+              onClick={(e) => {
+                e.stopPropagation();
+                if (isInCart(serviceToRender.id)) removeFromCart(serviceToRender.id);
+                else addToCart(serviceToRender);
+              }}
+              className={`w-full h-9 rounded-lg text-xs font-bold flex items-center justify-center gap-1.5 transition-all ${
+                isInCart(serviceToRender.id)
+                  ? "bg-red-50 text-red-600 hover:bg-red-100"
+                  : "bg-black text-white hover:bg-gray-800 hover:shadow-md"
+              }`}
+            >
+              {isInCart(serviceToRender.id) ? (
+                <>
+                  <X className="w-3.5 h-3.5" /> Remove
+                </>
+              ) : (
+                <>
+                  <ShoppingCart className="w-3.5 h-3.5" /> Add to Cart
+                </>
+              )}
+            </button>
+          </div>
+        </div>
+      </div>
+    );
+  };
 
   return (
     <div className={`bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden ${cart.length > 0 ? 'mb-24' : ''}`}>
@@ -140,75 +285,10 @@ export default function ServiceDetailsClient({ service, suggestedServices = [] }
       {suggestedServices.length > 0 && (
         <div className="border-t border-gray-100 bg-gray-50/50 p-6 md:p-8">
           <h2 className="text-xl font-bold text-gray-900 mb-6">You May Also Like</h2>
-          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
-            {suggestedServices.map((suggestedService) => {
-              const suggestedReviews = getServiceReviews(suggestedService);
-              const suggestedAvgRating = getAverageRating(suggestedReviews);
-              return (
-                <div 
-                  key={`sugg-${suggestedService.id}`} 
-                  onClick={() => router.push(`/client/services/${suggestedService.id}`)}
-                  className="bg-white rounded-xl border border-gray-100 shadow-sm hover:shadow-md transition-all duration-300 flex flex-col group cursor-pointer overflow-hidden"
-                >
-                  <div className="w-full h-28 bg-gray-50 relative overflow-hidden border-b border-gray-100">
-                    {(suggestedService as any).images?.[0] ? (
-                      <img src={(suggestedService as any).images[0]} alt={suggestedService.name} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" />
-                    ) : (
-                      <div className="w-full h-full flex items-center justify-center text-3xl bg-blue-50/30 group-hover:scale-105 transition-transform duration-500">
-                        {suggestedService.iconUrl || "✨"}
-                      </div>
-                    )}
-                    <div className="absolute top-2 left-2 bg-white/95 backdrop-blur-sm px-2 py-1 rounded text-[10px] font-bold text-gray-700 uppercase tracking-wider shadow-sm">
-                      {suggestedService.category?.name || "General"}
-                    </div>
-                  </div>
-                  
-                  <div className="p-4 flex flex-col flex-1">
-                    <div className="flex justify-between items-start mb-1 gap-2">
-                      <h3 className="text-sm font-bold text-gray-900 group-hover:text-blue-600 transition-colors line-clamp-1">{suggestedService.name}</h3>
-                      {suggestedReviews.length > 0 && (
-                        <div className="flex items-center gap-1 shrink-0 bg-yellow-50 px-1.5 py-0.5 rounded text-yellow-700">
-                          <Star className="w-3 h-3 fill-yellow-500 text-yellow-500" />
-                          <span className="text-[10px] font-bold">{suggestedAvgRating}</span>
-                        </div>
-                      )}
-                    </div>
-                    <p className="text-gray-500 text-xs mb-3 line-clamp-2">
-                      {suggestedService.description || "Top-rated professional service delivered by verified experts."}
-                    </p>
-                    
-                    {suggestedService.estimatedTime && (
-                      <div className="flex items-center gap-1.5 text-xs text-gray-500 mb-3 bg-gray-50 w-fit px-2 py-1 rounded-md">
-                        <Clock className="w-3.5 h-3.5" />
-                        <span>{suggestedService.estimatedTime}</span>
-                      </div>
-                    )}
-                  
-                    <div className="flex items-center justify-between mt-auto pt-3 border-t border-gray-50">
-                      <div>
-                        <p className="text-[10px] text-gray-400 font-medium uppercase tracking-wider mb-0.5">Starts at</p>
-                        <p className="text-sm font-bold text-gray-900">${suggestedService.basePrice.toFixed(2)}</p>
-                      </div>
-                      <button 
-                        onClick={(e) => {
-                          e.stopPropagation();
-                          if (isInCart(suggestedService.id)) removeFromCart(suggestedService.id);
-                          else addToCart(suggestedService);
-                        }}
-                        className={`w-8 h-8 rounded-full flex items-center justify-center transition-all ${
-                          isInCart(suggestedService.id) 
-                            ? "bg-red-50 text-red-600 hover:bg-red-100" 
-                            : "bg-black text-white hover:bg-gray-800 hover:shadow-md hover:-translate-y-0.5"
-                        }`}
-                      >
-                        {isInCart(suggestedService.id) ? <X className="w-3.5 h-3.5" /> : <ShoppingCart className="w-3.5 h-3.5" />}
-                      </button>
-                    </div>
-                  </div>
-                </div>
-              );
-            })}
-          </div>
+          <HorizontalServiceCarousel 
+            services={suggestedServices} 
+            renderCard={renderServiceCard} 
+          />
         </div>
       )}
 
@@ -290,31 +370,33 @@ export default function ServiceDetailsClient({ service, suggestedServices = [] }
 
       {/* Sticky Cart Summary Bar */}
       {cart.length > 0 && (
-        <div className="fixed bottom-0 left-0 right-0 z-50 bg-white border-t border-gray-200 shadow-[0_-4px_20px_-10px_rgba(0,0,0,0.1)] animate-in slide-in-from-bottom-full duration-300">
-          <div className="container mx-auto px-4 md:px-8 py-4 flex flex-col sm:flex-row items-center justify-between gap-4 max-w-7xl">
-            <div className="flex items-center gap-6">
-              <div className="flex flex-col">
-                <span className="text-sm text-gray-500 font-medium">Total Items</span>
-                <span className="text-lg font-bold text-gray-900">{cart.length} {cart.length === 1 ? 'Service' : 'Services'}</span>
+        <div className="fixed bottom-0 left-0 right-0 z-50 bg-white border-t border-gray-100 shadow-[0_-8px_30px_-15px_rgba(0,0,0,0.1)] animate-in slide-in-from-bottom-full duration-300">
+          <div className="container mx-auto px-4 py-3 flex items-center justify-between gap-2 max-w-7xl">
+            <div className="flex items-center gap-3">
+              <div className="w-10 h-10 bg-blue-50 text-blue-600 rounded-full flex items-center justify-center shrink-0">
+                <ShoppingCart className="w-5 h-5" />
               </div>
-              <div className="h-8 w-px bg-gray-200"></div>
               <div className="flex flex-col">
-                <span className="text-sm text-gray-500 font-medium">Total Amount</span>
-                <span className="text-xl font-black text-blue-600">${cartTotalAmount.toFixed(2)}</span>
+                <span className="text-[11px] uppercase tracking-wider text-gray-500 font-bold">
+                  {cart.length} {cart.length === 1 ? 'Item' : 'Items'}
+                </span>
+                <span className="text-base font-black text-gray-900 leading-none mt-0.5">
+                  ₹{cartTotalAmount.toFixed(2)}
+                </span>
               </div>
             </div>
-            <div className="flex items-center gap-3 w-full sm:w-auto">
+            <div className="flex items-center gap-2">
               <button 
                 onClick={() => setShowCancelConfirm(true)}
-                className="flex-1 sm:flex-none px-6 py-2.5 bg-red-50 hover:bg-red-100 text-red-600 font-bold rounded-xl transition-colors"
+                className="px-3 sm:px-5 py-2.5 bg-gray-100 hover:bg-red-50 text-gray-700 hover:text-red-600 text-xs sm:text-sm font-bold rounded-xl transition-colors"
               >
                 Cancel
               </button>
               <button 
                 onClick={() => router.push('/client/cart')}
-                className="flex-1 sm:flex-none px-6 py-2.5 bg-black hover:bg-gray-900 text-white font-bold rounded-xl transition-colors flex items-center justify-center gap-2"
+                className="px-4 sm:px-6 py-2.5 bg-black hover:bg-gray-900 text-white text-xs sm:text-sm font-bold rounded-xl transition-colors shadow-sm"
               >
-                View Cart 
+                View Cart
               </button>
             </div>
           </div>

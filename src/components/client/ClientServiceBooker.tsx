@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect, useMemo } from "react";
+import { useState, useEffect, useMemo, useRef } from "react";
 import {
   Search,
   ShoppingCart,
@@ -20,6 +20,65 @@ import ClientProfileMenu from "@/components/client/ClientProfileMenu";
 import CartIcon from "@/components/client/CartIcon";
 import LocationSelector from "@/components/client/LocationSelector";
 import { useLocation } from "@/context/LocationContext";
+
+const HorizontalServiceCarousel = ({ services, renderCard }: { services: Service[], renderCard: (s: Service) => React.ReactNode }) => {
+  const scrollRef = useRef<HTMLDivElement>(null);
+  const [showLeft, setShowLeft] = useState(false);
+  const [showRight, setShowRight] = useState(true);
+
+  const handleScroll = () => {
+    if (!scrollRef.current) return;
+    const { scrollLeft, scrollWidth, clientWidth } = scrollRef.current;
+    setShowLeft(scrollLeft > 5);
+    setShowRight(scrollLeft < scrollWidth - clientWidth - 5);
+  };
+
+  useEffect(() => {
+    handleScroll();
+    window.addEventListener("resize", handleScroll);
+    return () => window.removeEventListener("resize", handleScroll);
+  }, [services]);
+
+  const scroll = (direction: "left" | "right") => {
+    if (!scrollRef.current) return;
+    const scrollAmount = scrollRef.current.clientWidth * 0.8;
+    scrollRef.current.scrollBy({ left: direction === "left" ? -scrollAmount : scrollAmount, behavior: "smooth" });
+  };
+
+  return (
+    <div className="relative group -mx-4 px-4 sm:mx-0 sm:px-0">
+      {showLeft && (
+        <button 
+          onClick={() => scroll("left")} 
+          className="absolute left-1 sm:-left-4 top-1/2 -translate-y-1/2 z-10 bg-white/90 backdrop-blur shadow-[0_4px_12px_rgba(0,0,0,0.1)] border border-gray-100 rounded-full w-10 h-10 flex items-center justify-center text-black hover:bg-white transition-all md:hidden sm:group-hover:flex"
+        >
+          <ChevronLeft className="w-5 h-5" />
+        </button>
+      )}
+      {showRight && (
+        <button 
+          onClick={() => scroll("right")} 
+          className="absolute right-1 sm:-right-4 top-1/2 -translate-y-1/2 z-10 bg-white/90 backdrop-blur shadow-[0_4px_12px_rgba(0,0,0,0.1)] border border-gray-100 rounded-full w-10 h-10 flex items-center justify-center text-black hover:bg-white transition-all md:hidden sm:group-hover:flex"
+        >
+          <ChevronRight className="w-5 h-5" />
+        </button>
+      )}
+
+      <div 
+        ref={scrollRef}
+        onScroll={handleScroll}
+        className="flex sm:grid sm:grid-cols-2 lg:grid-cols-4 xl:grid-cols-5 gap-4 overflow-x-auto sm:overflow-visible snap-x snap-mandatory scrollbar-hide pb-4 sm:pb-0 w-full"
+        style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}
+      >
+        {services.map(service => (
+          <div key={service.id} className="w-[calc(50%-8px)] shrink-0 snap-start sm:w-auto">
+            {renderCard(service)}
+          </div>
+        ))}
+      </div>
+    </div>
+  );
+};
 
 export default function ClientServiceBooker({
   services,
@@ -186,10 +245,10 @@ export default function ClientServiceBooker({
       <div
         key={`service-${service.id}`}
         onClick={() => router.push(`/client/services/${service.id}`)}
-        className="bg-white rounded-xl border border-gray-100 shadow-sm hover:shadow-md transition-all duration-300 flex flex-col group cursor-pointer overflow-hidden"
+        className="bg-white rounded-xl border border-gray-100 shadow-sm hover:shadow-md transition-all duration-300 flex flex-col group cursor-pointer overflow-hidden min-w-0 h-[300px]"
       >
         {/* Top Image Cover */}
-        <div className="w-full h-40 sm:h-32 bg-gray-50 relative overflow-hidden border-b border-gray-100 shrink-0">
+        <div className="w-full h-28 bg-gray-50 relative overflow-hidden border-b border-gray-100 shrink-0">
           {(service as any).images?.[0] ? (
             <img
               src={(service as any).images[0]}
@@ -208,56 +267,55 @@ export default function ClientServiceBooker({
         </div>
 
         {/* Content Area */}
-        <div className="p-4 sm:p-4 flex flex-col flex-1">
-          <div className="flex justify-between items-start mb-1.5 gap-2">
-            <h3 className="text-base sm:text-sm font-bold text-gray-900 group-hover:text-blue-600 transition-colors line-clamp-1">
+        <div className="p-3 flex flex-col flex-1">
+          <div className="flex justify-between items-start mb-2 gap-2 h-[40px] overflow-hidden">
+            <h3 className="text-sm font-bold text-gray-900 group-hover:text-blue-600 transition-colors line-clamp-2">
               {service.name}
             </h3>
             {reviews.length > 0 && (
-              <div className="flex items-center gap-1 shrink-0 bg-yellow-50 px-1.5 py-0.5 rounded text-yellow-700">
-                <Star className="w-3.5 h-3.5 sm:w-3 sm:h-3 fill-yellow-500 text-yellow-500" />
-                <span className="text-[11px] sm:text-[10px] font-bold">{avgRating}</span>
+              <div className="flex items-center gap-1 shrink-0 bg-yellow-50 px-1.5 py-0.5 rounded text-yellow-700 mt-0.5">
+                <Star className="w-3 h-3 fill-yellow-500 text-yellow-500" />
+                <span className="text-[10px] font-bold">{avgRating}</span>
               </div>
             )}
           </div>
 
-          <p className="text-gray-500 text-sm sm:text-xs mb-3 line-clamp-2 leading-relaxed">
-            {service.description ||
-              "Top-rated professional service delivered by verified experts."}
-          </p>
+          <div className="mb-2 h-[28px] flex items-center shrink-0">
+            <p className="text-lg font-black text-gray-900 truncate">
+              ₹{service.basePrice.toFixed(2)}
+            </p>
+          </div>
 
-          {service.estimatedTime && (
-            <div className="flex items-center gap-1.5 text-xs text-gray-500 mb-4 bg-gray-50 w-fit px-2 py-1.5 rounded-md">
-              <Clock className="w-3.5 h-3.5" />
-              <span className="font-medium">{service.estimatedTime}</span>
-            </div>
-          )}
+          <div className="mb-2 h-[28px] shrink-0">
+            {service.estimatedTime && (
+              <div className="flex items-center gap-1.5 text-xs text-gray-500 bg-gray-50 w-fit px-2 py-1 rounded-md">
+                <Clock className="w-3.5 h-3.5" />
+                <span className="font-medium truncate">{service.estimatedTime}</span>
+              </div>
+            )}
+          </div>
 
-          <div className="flex items-center justify-between mt-auto pt-3 border-t border-gray-50">
-            <div>
-              <p className="text-[10px] sm:text-[10px] text-gray-400 font-bold uppercase tracking-wider mb-0.5">
-                Starts at
-              </p>
-              <p className="text-lg sm:text-sm font-black text-gray-900">
-                ${service.basePrice.toFixed(2)}
-              </p>
-            </div>
+          <div className="mt-auto pt-2 border-t border-gray-50 shrink-0">
             <button
               onClick={(e) => {
                 e.stopPropagation();
                 if (isInCart(service.id)) removeFromCart(service.id);
                 else addToCart(service);
               }}
-              className={`w-10 h-10 sm:w-8 sm:h-8 rounded-full flex items-center justify-center transition-all ${
+              className={`w-full h-9 rounded-lg text-xs font-bold flex items-center justify-center gap-1.5 transition-all ${
                 isInCart(service.id)
                   ? "bg-red-50 text-red-600 hover:bg-red-100"
-                  : "bg-black text-white hover:bg-gray-800 hover:shadow-md hover:-translate-y-0.5"
+                  : "bg-black text-white hover:bg-gray-800 hover:shadow-md"
               }`}
             >
               {isInCart(service.id) ? (
-                <X className="w-4 h-4 sm:w-3.5 sm:h-3.5" />
+                <>
+                  <X className="w-3.5 h-3.5" /> Remove
+                </>
               ) : (
-                <ShoppingCart className="w-4 h-4 sm:w-3.5 sm:h-3.5" />
+                <>
+                  <ShoppingCart className="w-3.5 h-3.5" /> Add to Cart
+                </>
               )}
             </button>
           </div>
@@ -269,20 +327,21 @@ export default function ClientServiceBooker({
   return (
     <div className="flex flex-col min-h-screen">
       {/* Fixed Navbar */}
-      <header className="h-16 bg-white/80 backdrop-blur-md border-b border-gray-100 flex items-center justify-between px-4 md:px-8 fixed top-0 w-full z-50">
-        <div className="flex items-center gap-4 shrink-0">
+      <header className="h-16 bg-white/80 backdrop-blur-md border-b border-gray-100 flex items-center justify-between px-2 sm:px-4 md:px-8 fixed top-0 w-full z-50">
+        <div className="flex items-center gap-2 sm:gap-4 shrink-0">
           <span
-            className="text-xl font-black tracking-tight cursor-pointer"
+            className="text-base sm:text-xl font-black tracking-tight cursor-pointer truncate max-w-[70px] sm:max-w-none"
             onClick={() => window.scrollTo({ top: 0, behavior: "smooth" })}
+            title="Client Portal"
           >
-            Client Portal
+            Portal
           </span>
         </div>
 
         {/* Search & Filter - Right aligned in navbar */}
-        <div className="flex-1 flex items-center justify-end gap-3 mx-4">
+        <div className="flex-1 flex items-center justify-end gap-1.5 sm:gap-3 mx-1 sm:mx-4 min-w-0">
           {!isGuest && (
-            <div className="hidden sm:block">
+            <div className="block shrink-0">
               <LocationSelector />
             </div>
           )}
@@ -300,14 +359,14 @@ export default function ClientServiceBooker({
 
           <button
             onClick={() => setShowFilters(!showFilters)}
-            className={`p-2 rounded-full border transition-all flex items-center justify-center ${showFilters || selectedCategories.length > 0 || priceRange.min || priceRange.max ? "bg-black text-white border-black shadow-md" : "bg-white border-gray-200 text-gray-700 hover:bg-gray-50"}`}
+            className={`p-2 rounded-full border transition-all flex items-center justify-center shrink-0 ${showFilters || selectedCategories.length > 0 || priceRange.min || priceRange.max ? "bg-black text-white border-black shadow-md" : "bg-white border-gray-200 text-gray-700 hover:bg-gray-50"}`}
             title="Filter Services"
           >
             <SlidersHorizontal className="w-4 h-4" />
           </button>
         </div>
 
-        <div className="flex items-center gap-4 shrink-0">
+        <div className="flex items-center gap-2 sm:gap-4 shrink-0">
           {!isGuest && (
             <button className="p-2 bg-gray-50 rounded-full hover:bg-gray-100 hidden sm:flex items-center justify-center">
               <Bell className="w-5 h-5" />
@@ -349,7 +408,7 @@ export default function ClientServiceBooker({
                 </div>
               </div>
 
-              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 xl:grid-cols-5 gap-4">
+              <div className="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-4 xl:grid-cols-5 gap-3 sm:gap-4">
                 {groupedServices[viewAllCategory]?.map((service) =>
                   renderServiceCard(service),
                 )}
@@ -407,11 +466,10 @@ export default function ClientServiceBooker({
                             Featured Services
                           </h2>
                         </div>
-                        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 xl:grid-cols-5 gap-4">
-                          {featuredServices.map((service) =>
-                            renderServiceCard(service),
-                          )}
-                        </div>
+                        <HorizontalServiceCarousel 
+                          services={featuredServices}
+                          renderCard={renderServiceCard}
+                        />
                       </div>
                     )}
 
@@ -480,11 +538,10 @@ export default function ClientServiceBooker({
                                   )}
                                 </div>
 
-                                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 xl:grid-cols-5 gap-4">
-                                  {visibleServices.map((service) =>
-                                    renderServiceCard(service),
-                                  )}
-                                </div>
+                                <HorizontalServiceCarousel 
+                                  services={visibleServices}
+                                  renderCard={renderServiceCard}
+                                />
                               </div>
                             );
                           },
@@ -628,39 +685,33 @@ export default function ClientServiceBooker({
 
       {/* Sticky Cart Summary Bar */}
       {cart.length > 0 && (
-        <div className="fixed bottom-0 left-0 right-0 z-50 bg-white border-t border-gray-200 shadow-[0_-4px_20px_-10px_rgba(0,0,0,0.1)] animate-in slide-in-from-bottom-full duration-300">
-          <div className="container mx-auto px-4 md:px-8 py-4 flex flex-col sm:flex-row items-center justify-between gap-4 max-w-7xl">
-            <div className="flex items-center gap-6">
-              <div className="flex flex-col">
-                <span className="text-sm text-gray-500 font-medium">
-                  Total Items
-                </span>
-                <span className="text-lg font-bold text-gray-900">
-                  {cart.length} {cart.length === 1 ? "Service" : "Services"}
-                </span>
+        <div className="fixed bottom-0 left-0 right-0 z-50 bg-white border-t border-gray-100 shadow-[0_-8px_30px_-15px_rgba(0,0,0,0.1)] animate-in slide-in-from-bottom-full duration-300">
+          <div className="container mx-auto px-4 py-3 flex items-center justify-between gap-2 max-w-7xl">
+            <div className="flex items-center gap-3">
+              <div className="w-10 h-10 bg-blue-50 text-blue-600 rounded-full flex items-center justify-center shrink-0">
+                <ShoppingCart className="w-5 h-5" />
               </div>
-              <div className="h-8 w-px bg-gray-200"></div>
               <div className="flex flex-col">
-                <span className="text-sm text-gray-500 font-medium">
-                  Total Amount
+                <span className="text-[11px] uppercase tracking-wider text-gray-500 font-bold">
+                  {cart.length} {cart.length === 1 ? 'Item' : 'Items'}
                 </span>
-                <span className="text-xl font-black text-blue-600">
-                  ${cartTotalAmount.toFixed(2)}
+                <span className="text-base font-black text-gray-900 leading-none mt-0.5">
+                  ₹{cartTotalAmount.toFixed(2)}
                 </span>
               </div>
             </div>
-            <div className="flex items-center gap-3 w-full sm:w-auto">
-              <button
+            <div className="flex items-center gap-2">
+              <button 
                 onClick={() => setShowCancelConfirm(true)}
-                className="flex-1 sm:flex-none px-6 py-2.5 bg-red-50 hover:bg-red-100 text-red-600 font-bold rounded-xl transition-colors"
+                className="px-3 sm:px-5 py-2.5 bg-gray-100 hover:bg-red-50 text-gray-700 hover:text-red-600 text-xs sm:text-sm font-bold rounded-xl transition-colors"
               >
                 Cancel
               </button>
-              <button
-                onClick={() => router.push("/client/cart")}
-                className="flex-1 sm:flex-none px-6 py-2.5 bg-black hover:bg-gray-900 text-white font-bold rounded-xl transition-colors flex items-center justify-center gap-2"
+              <button 
+                onClick={() => router.push('/client/cart')}
+                className="px-4 sm:px-6 py-2.5 bg-black hover:bg-gray-900 text-white text-xs sm:text-sm font-bold rounded-xl transition-colors shadow-sm"
               >
-                View Cart <ChevronRight className="w-4 h-4" />
+                View Cart
               </button>
             </div>
           </div>

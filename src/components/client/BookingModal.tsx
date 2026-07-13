@@ -155,34 +155,34 @@ export default function BookingModal({
       <div className="bg-white rounded-[2rem] w-full max-w-4xl shadow-2xl overflow-hidden relative flex flex-col max-h-[90vh] animate-in zoom-in-95">
         
         {/* Header */}
-        <div className="flex items-center justify-between px-8 py-6 border-b border-gray-100 bg-white/50 backdrop-blur-xl sticky top-0 z-10">
+        <div className="flex items-center justify-between px-4 sm:px-8 py-4 sm:py-6 border-b border-gray-100 bg-white/50 backdrop-blur-xl sticky top-0 z-10">
           <div>
-            <h2 className="text-2xl font-bold tracking-tight text-gray-900">Complete Your Booking</h2>
-            <p className="text-sm text-gray-500 mt-1">Provide your details to confirm {services.length} {services.length === 1 ? 'service' : 'services'}.</p>
+            <h2 className="text-xl sm:text-2xl font-bold tracking-tight text-gray-900">Complete Your Booking</h2>
+            <p className="text-xs sm:text-sm text-gray-500 mt-1">Provide your details to confirm {services.length} {services.length === 1 ? 'service' : 'services'}.</p>
           </div>
           <button 
             onClick={onClose}
-            className="p-2.5 bg-gray-50 hover:bg-gray-200 text-gray-500 hover:text-gray-900 rounded-full transition-colors"
+            className="p-2 sm:p-2.5 bg-gray-50 hover:bg-gray-200 text-gray-500 hover:text-gray-900 rounded-full transition-colors shrink-0 ml-4"
           >
             <X className="w-5 h-5" />
           </button>
         </div>
 
-        <div className="overflow-y-auto px-8 py-8 flex-1 custom-scrollbar">
+        <div className="overflow-y-auto px-4 sm:px-8 py-4 sm:py-8 flex-1 custom-scrollbar">
           {error && (
-            <div className="mb-8 p-4 bg-red-50 text-red-600 rounded-2xl border border-red-100 text-sm font-medium flex items-center gap-3">
-              <div className="w-2 h-2 rounded-full bg-red-500 animate-pulse" />
+            <div className="mb-6 p-3 sm:p-4 bg-red-50 text-red-600 rounded-xl sm:rounded-2xl border border-red-100 text-sm font-medium flex items-center gap-3">
+              <div className="w-2 h-2 rounded-full bg-red-500 animate-pulse shrink-0" />
               {error}
             </div>
           )}
 
-          <div className="grid grid-cols-1 lg:grid-cols-5 gap-10">
+          <div className="grid grid-cols-1 lg:grid-cols-5 gap-6 lg:gap-10">
             
             {/* Left Column: Summary */}
             <div className="lg:col-span-2 space-y-6 order-2 lg:order-1">
-              <div className="bg-gray-50 rounded-3xl p-6 border border-gray-100/80 relative overflow-hidden h-full flex flex-col">
+              <div className="bg-gray-50 rounded-2xl sm:rounded-3xl p-4 sm:p-6 border border-gray-100/80 relative overflow-hidden h-full flex flex-col">
                 <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-gray-200 to-gray-300" />
-                <h3 className="font-bold text-gray-900 mb-6 flex items-center gap-2 text-xs uppercase tracking-widest">
+                <h3 className="font-bold text-gray-900 mb-4 sm:mb-6 flex items-center gap-2 text-xs uppercase tracking-widest">
                   Order Summary
                 </h3>
                 
@@ -318,7 +318,7 @@ export default function BookingModal({
                       name="date"
                       required
                       min={new Date().toISOString().split('T')[0]}
-                      className="w-full bg-white border border-gray-200 rounded-2xl px-4 py-3.5 focus:outline-none focus:ring-4 focus:ring-gray-100 focus:border-gray-900 transition-all font-medium text-gray-900 shadow-sm"
+                      className="w-full bg-white border border-gray-200 rounded-xl sm:rounded-2xl px-3 sm:px-4 py-2.5 sm:py-3.5 focus:outline-none focus:ring-4 focus:ring-gray-100 focus:border-gray-900 transition-all font-medium text-gray-900 shadow-sm text-sm sm:text-base"
                     />
                   </div>
 
@@ -331,7 +331,7 @@ export default function BookingModal({
                         name="timeSlot"
                         required
                         defaultValue=""
-                        className="w-full bg-white border border-gray-200 rounded-2xl px-4 py-3.5 focus:outline-none focus:ring-4 focus:ring-gray-100 focus:border-gray-900 transition-all font-medium text-gray-900 appearance-none shadow-sm"
+                        className="w-full bg-white border border-gray-200 rounded-xl sm:rounded-2xl px-3 sm:px-4 py-2.5 sm:py-3.5 focus:outline-none focus:ring-4 focus:ring-gray-100 focus:border-gray-900 transition-all font-medium text-gray-900 appearance-none shadow-sm text-sm sm:text-base"
                       >
                         <option value="" disabled hidden>Choose a slot...</option>
                         <option value="MORNING">Morning (8 AM - 12 PM)</option>
@@ -355,7 +355,7 @@ export default function BookingModal({
                       required
                       value={district}
                       onChange={(e) => setDistrict(e.target.value)}
-                      className="w-full bg-white border border-gray-200 rounded-2xl px-4 py-3.5 focus:outline-none focus:ring-4 focus:ring-gray-100 focus:border-gray-900 transition-all font-medium text-gray-900 appearance-none shadow-sm"
+                      className="w-full bg-white border border-gray-200 rounded-xl sm:rounded-2xl px-3 sm:px-4 py-2.5 sm:py-3.5 focus:outline-none focus:ring-4 focus:ring-gray-100 focus:border-gray-900 transition-all font-medium text-gray-900 appearance-none shadow-sm text-sm sm:text-base"
                     >
                       <option value="" disabled hidden>Select your district...</option>
                       {districts.map(d => (
@@ -379,7 +379,7 @@ export default function BookingModal({
                     onChange={(e) => setAddress(e.target.value)}
                     placeholder="Enter the full street address..."
                     rows={3}
-                    className="w-full bg-white border border-gray-200 rounded-2xl px-4 py-3.5 focus:outline-none focus:ring-4 focus:ring-gray-100 focus:border-gray-900 transition-all font-medium text-gray-900 resize-none shadow-sm placeholder:text-gray-400 leading-relaxed"
+                    className="w-full bg-white border border-gray-200 rounded-xl sm:rounded-2xl px-3 sm:px-4 py-2.5 sm:py-3.5 focus:outline-none focus:ring-4 focus:ring-gray-100 focus:border-gray-900 transition-all font-medium text-gray-900 resize-none shadow-sm placeholder:text-gray-400 leading-relaxed text-sm sm:text-base"
                   ></textarea>
                 </div>
 
@@ -396,7 +396,7 @@ export default function BookingModal({
                     placeholder="10-digit mobile number"
                     pattern="\d{10}"
                     title="Please enter exactly 10 digits"
-                    className="w-full bg-white border border-gray-200 rounded-2xl px-4 py-3.5 focus:outline-none focus:ring-4 focus:ring-gray-100 focus:border-gray-900 transition-all font-medium text-gray-900 shadow-sm placeholder:text-gray-400"
+                    className="w-full bg-white border border-gray-200 rounded-xl sm:rounded-2xl px-3 sm:px-4 py-2.5 sm:py-3.5 focus:outline-none focus:ring-4 focus:ring-gray-100 focus:border-gray-900 transition-all font-medium text-gray-900 shadow-sm placeholder:text-gray-400 text-sm sm:text-base"
                   />
                 </div>
 
@@ -442,15 +442,15 @@ export default function BookingModal({
         </div>
 
         {/* Footer */}
-        <div className="px-8 py-5 border-t border-gray-100 bg-white flex flex-col sm:flex-row items-center justify-between gap-6 z-10 shadow-[0_-4px_20px_-10px_rgba(0,0,0,0.05)]">
-          <p className="text-xs text-gray-500 font-medium max-w-sm text-center sm:text-left leading-relaxed">
+        <div className="px-4 sm:px-8 py-4 sm:py-5 border-t border-gray-100 bg-white flex flex-col sm:flex-row items-center justify-between gap-4 z-10 shadow-[0_-4px_20px_-10px_rgba(0,0,0,0.05)]">
+          <p className="text-[11px] sm:text-xs text-gray-500 font-medium max-w-sm text-center sm:text-left leading-relaxed">
             By confirming, you agree to our cancellation policy. Payment is securely processed <strong className="text-gray-900">after</strong> the service is completed.
           </p>
           <button 
             type="submit" 
             form="booking-form"
             disabled={loading}
-            className="w-full sm:w-auto px-10 py-4 bg-gray-900 text-white font-bold rounded-2xl shadow-xl shadow-gray-900/20 hover:bg-black hover:shadow-2xl hover:-translate-y-0.5 transition-all flex items-center justify-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none"
+            className="w-full sm:w-auto px-6 sm:px-10 py-3 sm:py-4 bg-gray-900 text-white font-bold rounded-xl sm:rounded-2xl shadow-lg shadow-gray-900/20 hover:bg-black hover:shadow-xl hover:-translate-y-0.5 transition-all flex items-center justify-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none text-sm sm:text-base"
           >
             {loading ? <Loader2 className="w-5 h-5 animate-spin" /> : "Confirm Booking"}
           </button>

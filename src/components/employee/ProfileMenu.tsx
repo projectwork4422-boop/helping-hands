@@ -39,15 +39,15 @@ export default function ProfileMenu({ userName, profileStatus = "PENDING" }: Pro
       <div className="relative" ref={menuRef}>
         <button 
           onClick={() => setIsOpen(!isOpen)}
-          className="flex items-center gap-3 p-1.5 pr-3 bg-white border border-gray-200 rounded-full hover:border-gray-300 hover:shadow-sm transition-all focus:outline-none focus:ring-2 focus:ring-black/5"
+          className="flex items-center gap-2 sm:gap-3 p-1 sm:p-1.5 pr-2 sm:pr-3 bg-white border border-gray-200 rounded-full hover:border-gray-300 hover:shadow-sm transition-all focus:outline-none focus:ring-2 focus:ring-black/5"
         >
-          <div className="w-8 h-8 bg-black text-white rounded-full flex items-center justify-center font-bold text-sm">
+          <div className="w-6 h-6 sm:w-8 sm:h-8 bg-black text-white rounded-full flex items-center justify-center font-bold text-xs sm:text-sm">
             {userName?.charAt(0).toUpperCase() || "U"}
           </div>
           <span className="text-sm font-bold text-gray-900 hidden sm:block">
             {userName?.split(" ")[0]}
           </span>
-          <ChevronDown className={`w-4 h-4 text-gray-400 transition-transform ${isOpen ? "rotate-180" : ""}`} />
+          <ChevronDown className={`w-3 h-3 sm:w-4 sm:h-4 text-gray-400 transition-transform ${isOpen ? "rotate-180" : ""}`} />
         </button>
 
         {isOpen && (
@@ -89,22 +89,22 @@ export default function ProfileMenu({ userName, profileStatus = "PENDING" }: Pro
 
       {showConfirm && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm p-4 animate-in fade-in duration-200">
-          <div className="bg-white rounded-[2rem] w-full max-w-sm p-8 shadow-2xl animate-in zoom-in-95 duration-300">
-            <div className="w-16 h-16 bg-red-50 text-red-600 rounded-2xl flex items-center justify-center mb-6">
-              <LogOut className="w-8 h-8" />
+          <div className="bg-white rounded-2xl sm:rounded-[2rem] w-full max-w-sm p-6 sm:p-8 shadow-2xl animate-in zoom-in-95 duration-300">
+            <div className="w-12 h-12 sm:w-16 sm:h-16 bg-red-50 text-red-600 rounded-xl sm:rounded-2xl flex items-center justify-center mb-4 sm:mb-6">
+              <LogOut className="w-6 h-6 sm:w-8 sm:h-8" />
             </div>
-            <h3 className="text-2xl font-black mb-2 tracking-tight">Sign Out</h3>
-            <p className="text-gray-500 mb-8">Are you sure you want to end your session and sign out of the professional portal?</p>
-            <div className="flex gap-3">
+            <h3 className="text-xl sm:text-2xl font-black mb-2 tracking-tight">Sign Out</h3>
+            <p className="text-sm sm:text-base text-gray-500 mb-6 sm:mb-8">Are you sure you want to end your session and sign out of the professional portal?</p>
+            <div className="flex flex-col-reverse sm:flex-row gap-2 sm:gap-3">
               <button 
                 onClick={() => setShowConfirm(false)}
-                className="flex-1 py-3.5 rounded-xl border border-gray-200 font-bold hover:bg-gray-50 transition-colors"
+                className="w-full sm:flex-1 py-3 sm:py-3.5 rounded-xl border border-gray-200 font-bold hover:bg-gray-50 transition-colors"
               >
                 Cancel
               </button>
               <button 
                 onClick={handleConfirmLogout}
-                className="flex-1 py-3.5 rounded-xl bg-red-600 text-white font-bold hover:bg-red-700 hover:shadow-lg hover:shadow-red-600/20 hover:-translate-y-0.5 active:translate-y-0 transition-all"
+                className="w-full sm:flex-1 py-3 sm:py-3.5 rounded-xl bg-red-600 text-white font-bold hover:bg-red-700 hover:shadow-lg hover:shadow-red-600/20 hover:-translate-y-0.5 active:translate-y-0 transition-all"
               >
                 Sign Out
               </button>

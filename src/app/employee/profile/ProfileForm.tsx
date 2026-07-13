@@ -94,13 +94,13 @@ export default function ProfileForm({ user, profile, allServices = [] }: { user:
           <div className="bg-white rounded-2xl p-6 max-w-sm w-full shadow-xl">
             <h3 className="text-lg font-bold text-gray-900 mb-2">Edit Profile</h3>
             <p className="text-gray-600 mb-6">Are you sure you want to edit your profile?</p>
-            <div className="flex gap-3 justify-end">
+            <div className="flex flex-col-reverse sm:flex-row gap-2 sm:gap-3 justify-end mt-2 sm:mt-0">
               <button 
                 type="button"
                 onClick={() => setShowConfirm(false)}
-                className="px-4 py-2 text-gray-700 font-bold hover:bg-gray-100 rounded-xl transition-colors"
+                className="w-full sm:w-auto px-4 py-2 text-gray-600 hover:bg-gray-100 font-bold rounded-lg transition-colors"
               >
-                No
+                Cancel
               </button>
               <button 
                 type="button"
@@ -108,23 +108,26 @@ export default function ProfileForm({ user, profile, allServices = [] }: { user:
                   setShowConfirm(false);
                   setIsEditing(true);
                 }}
-                className="px-4 py-2 bg-black text-white font-bold rounded-xl hover:bg-gray-800 transition-colors"
+                className="w-full sm:w-auto px-4 py-2 bg-black text-white font-bold rounded-lg hover:bg-gray-800 transition-colors"
               >
-                Yes
+                Yes, Edit Profile
               </button>
             </div>
           </div>
         </div>
       )}
 
-      <form onSubmit={handleSubmit} className="space-y-8">
-        <div className="flex justify-between items-center border-b border-gray-100 pb-4">
-          <h2 className="text-xl font-bold">Profile Details</h2>
+      <form onSubmit={handleSubmit} className="space-y-6 sm:space-y-8">
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-gray-100 pb-4">
+          <div>
+            <h2 className="text-xl sm:text-2xl font-black text-gray-900">Personal Information</h2>
+            <p className="text-xs sm:text-sm text-gray-500 mt-1">Update your photo and personal details here.</p>
+          </div>
           {!isEditing && (
             <button 
               type="button"
               onClick={() => setShowConfirm(true)}
-              className="px-4 py-2 bg-black text-white font-bold rounded-lg hover:bg-gray-800 transition-colors text-sm"
+              className="w-full sm:w-auto px-6 py-3 sm:py-2.5 bg-black text-white text-sm font-bold rounded-xl hover:bg-gray-800 transition-all shadow-md hover:shadow-lg"
             >
               Edit Profile
             </button>
@@ -176,7 +179,7 @@ export default function ProfileForm({ user, profile, allServices = [] }: { user:
           )}
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-6">
           {/* Editable Fields (When in edit mode) */}
           <div className="space-y-4">
             <h3 className="font-bold text-lg text-gray-900 border-b pb-2">Information</h3>
@@ -254,7 +257,7 @@ export default function ProfileForm({ user, profile, allServices = [] }: { user:
           </div>
 
           {/* Read-Only Fields */}
-          <div className="space-y-4 bg-gray-50/50 p-6 rounded-2xl border border-gray-100">
+          <div className="space-y-4 bg-gray-50/50 p-4 sm:p-6 rounded-2xl border border-gray-100">
             <h3 className="font-bold text-lg text-gray-900 border-b pb-2">Account Details (Read-Only)</h3>
             
             <div>
@@ -296,19 +299,19 @@ export default function ProfileForm({ user, profile, allServices = [] }: { user:
         </div>
 
         {isEditing && (
-          <div className="pt-6 border-t border-gray-100 flex justify-end gap-4">
+          <div className="pt-4 sm:pt-6 border-t border-gray-100 flex flex-col-reverse sm:flex-row justify-end gap-3 sm:gap-4 mt-6">
             <button 
               type="button" 
               onClick={handleCancel}
               disabled={isPending}
-              className="px-6 py-3 bg-gray-100 text-gray-700 font-bold rounded-xl hover:bg-gray-200 disabled:opacity-50 transition-colors"
+              className="w-full sm:w-auto px-6 py-3 bg-gray-100 text-gray-700 font-bold rounded-xl hover:bg-gray-200 disabled:opacity-50 transition-colors"
             >
               Cancel
             </button>
             <button 
               type="submit" 
               disabled={isPending}
-              className="px-8 py-3 bg-black text-white font-bold rounded-xl hover:bg-gray-800 disabled:bg-gray-400 disabled:cursor-not-allowed transition-colors flex items-center gap-2 shadow-md hover:shadow-lg"
+              className="w-full sm:w-auto px-8 py-3 bg-black text-white font-bold rounded-xl hover:bg-gray-800 disabled:bg-gray-400 disabled:cursor-not-allowed transition-colors flex items-center justify-center gap-2 shadow-md hover:shadow-lg"
             >
               {isPending && <Loader2 className="w-4 h-4 animate-spin" />}
               Save Changes
