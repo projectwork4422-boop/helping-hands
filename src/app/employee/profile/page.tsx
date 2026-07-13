@@ -33,12 +33,12 @@ export default async function EmployeeProfilePage() {
 
   return (
     <div className="min-h-screen bg-gray-50 flex flex-col">
-      <header className="h-20 bg-white border-b border-gray-100 flex items-center justify-between px-6 md:px-12 sticky top-0 z-40">
+      <header className="h-16 sm:h-20 bg-white border-b border-gray-100 flex items-center justify-between px-4 sm:px-6 md:px-12 sticky top-0 z-40">
         <div className="flex items-center gap-3">
-          <div className="w-10 h-10 bg-black rounded-xl flex items-center justify-center shadow-lg shadow-black/10">
-            <Briefcase className="w-5 h-5 text-white" />
+          <div className="w-8 h-8 sm:w-10 sm:h-10 bg-black rounded-lg sm:rounded-xl flex items-center justify-center shadow-lg shadow-black/10 shrink-0">
+            <Briefcase className="w-4 h-4 sm:w-5 sm:h-5 text-white" />
           </div>
-          <span className="text-xl font-black tracking-tight hidden sm:block">ProPortal</span>
+          <span className="text-lg sm:text-xl font-black tracking-tight hidden sm:block">ProPortal</span>
         </div>
         
         <div className="flex-1 max-w-xl mx-8 hidden md:block">
@@ -59,25 +59,25 @@ export default async function EmployeeProfilePage() {
         </div>
       </header>
       
-      <main className="flex-1 overflow-auto p-6 md:p-12">
-        <div className="max-w-4xl mx-auto space-y-8">
+      <main className="flex-1 overflow-auto p-4 sm:p-6 md:p-12">
+        <div className="max-w-4xl mx-auto space-y-6 sm:space-y-8">
           
-          <div className="flex items-center gap-4">
-            <Link href="/employee/dashboard" className="p-2 hover:bg-gray-200 rounded-full transition-colors bg-white shadow-sm">
-              <ArrowLeft className="w-5 h-5" />
+          <div className="flex items-start sm:items-center gap-3 sm:gap-4">
+            <Link href="/employee/dashboard" className="p-2 hover:bg-gray-200 rounded-full transition-colors bg-white shadow-sm shrink-0 mt-1 sm:mt-0">
+              <ArrowLeft className="w-4 h-4 sm:w-5 sm:h-5" />
             </Link>
             <div>
-              <h1 className="text-3xl font-black tracking-tight flex items-center gap-3">
-                <div className="w-10 h-10 rounded-xl bg-purple-50 text-purple-600 flex items-center justify-center">
-                  <UserIcon className="w-5 h-5" />
+              <h1 className="text-2xl sm:text-3xl font-black tracking-tight flex items-center gap-2 sm:gap-3">
+                <div className="w-8 h-8 sm:w-10 sm:h-10 rounded-lg sm:rounded-xl bg-purple-50 text-purple-600 flex items-center justify-center shrink-0">
+                  <UserIcon className="w-4 h-4 sm:w-5 sm:h-5" />
                 </div>
                 My Profile
               </h1>
-              <p className="text-black/60 mt-1">Manage your personal information and profile settings.</p>
+              <p className="text-xs sm:text-sm text-black/60 mt-1">Manage your personal information and profile settings.</p>
             </div>
           </div>
 
-          <div className="bg-white rounded-3xl border border-gray-100 shadow-sm overflow-hidden p-8">
+          <div className="bg-white rounded-2xl sm:rounded-3xl border border-gray-100 shadow-sm overflow-hidden p-4 sm:p-8">
             <ProfileForm user={user as any} profile={user.employeeProfile as any} allServices={serviceNames} />
           </div>
         </div>

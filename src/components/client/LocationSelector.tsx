@@ -42,25 +42,31 @@ export default function LocationSelector() {
     <div className="relative" ref={dropdownRef}>
       <button 
         onClick={() => setIsOpen(!isOpen)}
-        className={`flex items-center gap-2 px-4 py-2.5 rounded-full transition-all border ${
+        className={`flex items-center gap-1.5 sm:gap-2 px-3 sm:px-4 py-2 sm:py-2.5 rounded-full transition-all border ${
           isOpen ? "bg-white border-gray-300 shadow-sm" : "bg-gray-50/80 hover:bg-white border-transparent hover:border-gray-200 hover:shadow-sm"
         }`}
       >
-        <MapPin className={`w-4 h-4 transition-colors ${isOpen ? "text-black" : "text-gray-500"}`} />
-        <div className="flex flex-col items-start leading-none">
-          <span className="text-[10px] font-bold text-gray-400 uppercase tracking-wider mb-0.5">Delivering to</span>
-          <span className="text-sm font-bold text-gray-900 truncate max-w-[140px]">
-            {activeLocation ? activeLocation.label : "Select Location"}
+        <MapPin className={`w-4 h-4 shrink-0 transition-colors ${isOpen ? "text-black" : "text-gray-500"}`} />
+        <div className="flex flex-col items-start leading-none max-w-[80px] sm:max-w-[140px]">
+          <span className="hidden sm:block text-[10px] font-bold text-gray-400 uppercase tracking-wider mb-0.5">Delivering to</span>
+          <span className="text-xs sm:text-sm font-bold text-gray-900 truncate w-full text-left">
+            {activeLocation ? activeLocation.label : "Location"}
           </span>
         </div>
-        <ChevronDown className={`w-4 h-4 text-gray-400 transition-transform duration-300 ${isOpen ? "rotate-180" : ""}`} />
+        <ChevronDown className={`w-3.5 h-3.5 sm:w-4 sm:h-4 shrink-0 text-gray-400 transition-transform duration-300 ${isOpen ? "rotate-180" : ""}`} />
       </button>
 
       {isOpen && (
-        <div className="absolute top-full left-0 mt-3 w-80 bg-white border border-gray-100 rounded-2xl shadow-xl z-50 py-3 animate-in fade-in slide-in-from-top-2 duration-200">
-          <div className="px-5 py-2 border-b border-gray-50 mb-2">
-            <span className="text-xs font-bold text-gray-400 uppercase tracking-wider">Your Saved Locations</span>
-          </div>
+        <>
+          <div 
+            className="fixed inset-0 bg-black/60 z-40 sm:hidden backdrop-blur-sm"
+            onClick={() => setIsOpen(false)}
+          />
+          <div className="fixed sm:absolute bottom-0 sm:bottom-auto sm:top-full left-0 sm:mt-3 w-full sm:w-80 bg-white border border-gray-100 rounded-t-3xl sm:rounded-2xl shadow-xl z-50 py-4 sm:py-3 animate-in slide-in-from-bottom-full sm:slide-in-from-top-2 fade-in duration-300 sm:duration-200 max-h-[85vh] flex flex-col">
+            <div className="w-12 h-1.5 bg-gray-200 rounded-full mx-auto mb-3 sm:hidden shrink-0" />
+            <div className="px-5 py-2 border-b border-gray-50 mb-2 shrink-0">
+              <span className="text-xs font-bold text-gray-400 uppercase tracking-wider">Your Saved Locations</span>
+            </div>
 
           {locationWarning && (
             <div className="mx-4 mb-3 p-3 bg-red-50 border border-red-100 rounded-xl relative">
@@ -120,7 +126,7 @@ export default function LocationSelector() {
             </div>
           )}
           
-          <div className="px-4 pt-3 mt-2 border-t border-gray-50">
+          <div className="px-4 pt-3 mt-2 border-t border-gray-50 shrink-0 mb-4 sm:mb-0">
             <button 
               onClick={() => {
                 setIsOpen(false);
@@ -132,6 +138,7 @@ export default function LocationSelector() {
             </button>
           </div>
         </div>
+        </>
       )}
 
       {showManager && (
